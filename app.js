@@ -8,8 +8,10 @@ const connectionString = "mongodb+srv://root:Asdfghjkl@webprojektibackend.vxnie.
 
 // Mandatory for express
 app.use(bodyParser.urlencoded({ extended: true }))
-// Cors for dev pursposes
+// Cors for dev pursposes https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b
 app.use(cors())
+// Application/json parser
+let jsonParser = bodyParser.json()
 
 // First we connect to db and then on REST call we execute requested operations from frond-end
 MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) => {
@@ -23,15 +25,22 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) 
         console.log(`Example app listening at http://localhost:${port}`)
     })
 
-    app.get('/', (req, res) => {
-        res.send("Hello world!")
+    app.get('/', async (req, res) => {
+        await res.send("Hello world!")
     })
 
-    app.get('/json', (req, res) => {
-        db.collection('posts').find().toArray()
+    // Web data reading
+    app.get('/json', async (req, res) => {
+        await db.collection('posts').find().toArray()
             .then(results => {
                 res.send(results)
             })
             .catch(error => console.error(error))
+    })
+
+    // Web data receiving -> DB
+    app.post('/post', jsonParser, async (req, res) => {
+        console.log(JSON.stringify(req.body))
+        await db.collection('posts').insertOne(req.body)
     })
 })
