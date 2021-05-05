@@ -38,9 +38,28 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) 
             .catch(error => console.error(error))
     })
 
-    // Web data receiving -> DB
+    // Web new post data receiving -> DB
     app.post('/post', jsonParser, async (req, res) => {
         console.log(JSON.stringify(req.body))
         await db.collection('posts').insertOne(req.body)
+    })
+
+    // Web new comment data receiving -> DB
+    app.post('/postComment', jsonParser, async (req, res) => {
+        try {
+            console.log(JSON.stringify(req.body))
+            referenceTitle = req.body.referenceTitle
+            json = req.body
+            postsCollection.findOneAndUpdate({title: referenceTitle}, {$set:{comments: {json}}}, {new: true}, (err, doc) => {
+                if (err) {
+                    console.log("Something wrong when updating data!");
+                }
+
+                console.log(doc);
+            });
+            //await db.collection('posts').insertOne(req.body)
+        } catch (e) {
+            
+        }
     })
 })
