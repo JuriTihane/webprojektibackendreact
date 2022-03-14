@@ -10,12 +10,12 @@ const userController = require("./controller/userController");
 const port = 3000
 const connectionString = "mongodb+srv://root:Asdfghjkl@webprojektibackend.vxnie.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
-// Start server by running: nodemon
+// TODO: HUOM käynnistä serveri ajamalla terminaalissa 'npm install' ja sen jälkeen 'nodemon'
 
-// Mandatory for express
+// Pakollinen Expressiä varten
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
-// Cors for dev pursposes https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b
+// Cors devaamista varten https://medium.com/zero-equals-false/using-cors-in-express-cac7e29b005b
 app.use(cors())
 // Application/json parser
 let jsonParser = bodyParser.json()
@@ -32,7 +32,7 @@ mongoose
         console.log({ database_error: err });
     });
 
-// First we connect to db and then on REST call we execute requested operations from frond-end
+// Ensin yhdistäydyn DB:hen, jonka jälkeen kuuntelen
 MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) => {
     if (err) return console.error(err)
     console.log('Connected to Database')
@@ -48,7 +48,7 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) 
         await res.send("Hello world!")
     })
 
-    // Web data reading
+    // Datan lukeminen
     app.get('/json', async (req, res) => {
         await db.collection('posts').find().toArray()
             .then(results => {
@@ -57,7 +57,7 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) 
             .catch(error => console.error(error))
     })
 
-    // Web new post data receiving -> DB
+    // Uusi post
     app.post('/post', jsonParser, async (req, res) => {
         console.log(JSON.stringify(req.body))
         let title = req.body.title;
@@ -86,7 +86,7 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true}, (err, client) 
         }
     })
 
-    // Web new comment data receiving -> DB
+    // TODO: Front-end
     app.post('/postComment', jsonParser, async (req, res) => {
         try {
             console.log(JSON.stringify(req.body))

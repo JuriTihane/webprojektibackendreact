@@ -6,10 +6,6 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Please Include your name"]
     },
-    email: {
-        type: String,
-        required: [true, "Please Include your email"]
-    },
     password: {
         type: String,
         required: [true, "Please Include your password"]
@@ -24,7 +20,7 @@ const userSchema = mongoose.Schema({
     ]
 });
 
-//this method will hash the password before saving the user model
+// Tämä metodi hashaa salasanan ennen sitä tallentamista
 userSchema.pre("save", async function(next) {
     const user = this;
     if (user.isModified("password")) {
@@ -33,19 +29,19 @@ userSchema.pre("save", async function(next) {
     next();
 });
 
-//this method generates an auth token for the user
+// Tämä metodi generoi tokenin käyttäjälle
 userSchema.methods.generateAuthToken = async function() {
     const user = this;
-    const token = jwt.sign({ _id: user._id, name: user.name, email: user.email },
+    const token = jwt.sign({ _id: user._id, name: user.name },
         "secret");
     user.tokens = user.tokens.concat({ token });
     await user.save();
     return token;
 };
 
-//this method search for a user by email and password.
-userSchema.statics.findByCredentials = async (email, password) => {
-    const user = await User.findOne({ email });
+// Tämä metodi etsii käyttäjän usernamella ja salasanalla
+userSchema.statics.findByCredentials = async (name, password) => {
+    const user = await User.findOne({ name });
     if (!user) {
         throw new Error({ error: "Invalid login details" });
     }

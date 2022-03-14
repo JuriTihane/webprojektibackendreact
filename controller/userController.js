@@ -2,20 +2,19 @@ const User = require("../model/User");
 
 exports.registerNewUser = async (req, res) => {
     try {
-        let userr = await User.find({email: req.body.email})
+        let userr = await User.find({name: req.body.name})
         if (userr.toString().length >= 1) {
             return res.status(409).json({
-                message: "Email already in use"
+                message: "Username already in use"
             })
         }
         console.log("AAAAAAAA" + JSON.stringify(req.body))
         const user = new User({
             name: req.body.name,
-            email: req.body.email,
             password: req.body.password
         });
         let data = await user.save();
-        const token = await user.generateAuthToken(); // here it is calling the method that we created in the model
+        const token = await user.generateAuthToken();
         res.status(201).json({data, token});
     } catch (err) {
         console.log(err)
@@ -25,9 +24,9 @@ exports.registerNewUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     try {
-        const email = req.body.email;
+        const name = req.body.name;
         const password = req.body.password;
-        const user = await User.findByCredentials(email, password);
+        const user = await User.findByCredentials(name, password);
         if (!user) {
             return res.status(401).json({ error: "Login failed! Check authentication credentials" });
         }
